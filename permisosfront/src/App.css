@@ -1,0 +1,17 @@
+body {
+  background-color: #12163c;
+  color: #ffffff;
+}
+
+.btn-primary {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+}
+
+h1, h2 {
+  font-weight: bold;
+}
+
+p {
+  color: #d1d5db;
+}
