@@ -29,10 +29,10 @@ function FormularioPermisos() {
   const handleSearchStudent = async () => {
     try {
       const response = await axios.get(`https://sispermisosfacil.onrender.com/students/cedula/${formData.studentId}`);
-      const { name, last_name, email, semester } = response.data;
+      const { name, email, semester } = response.data;
       setFormData({
         ...formData,
-        fullName: `${name} ${last_name}`,
+        fullName: `${name}`,
         institutionalEmail: email,
         semester
       });
