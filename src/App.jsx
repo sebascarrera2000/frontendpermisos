@@ -5,6 +5,7 @@ import HomePage from './components/HomePage';
 import FormularioPermisos from './components/FormularioPermisos';
 import Login from './components/login';
 import Dashboard from './components/Dashboard'; // Si ya tienes el Dashboard
+import StudentManagement from './components/StudentManagement';
 
 function App() {
   return (
@@ -15,6 +16,8 @@ function App() {
         <Route path="/formulario" element={<FormularioPermisos />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} /> {/* Página protegida */}
+        <Route path="/student-management" element={<StudentManagement />} />
+
       </Routes>
     </Router>
   );

@@ -164,6 +164,11 @@ function Dashboard() {
     }
   };
 
+
+  const isPdf = (url) => url.includes('cdn.filestackcontent.com');
+  const isImage = (url) => url.includes('r2.fivemanage.com');
+
+
   return (
     <div className="container py-5">
       <h2 className="text-center text-primary mb-4">Dashboard de Administración</h2>
@@ -227,7 +232,8 @@ function Dashboard() {
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Fecha</th>
+                    <th>Fechas Solicitado</th>
+                    <th>Fechas Permiso</th>
                     <th>Nombre</th>
                     <th>Correo Institucional</th>
                     <th>Acciones</th>
@@ -237,7 +243,12 @@ function Dashboard() {
                   {permissions.map((permission, index) => (
                     <tr key={permission._id}>
                       <td>{index + 1}</td>
-                      <td>{new Date(permission.timestamp).toLocaleString()}</td>
+                      <td>{new Date(permission.timestamp).toLocaleDateString("es-ES")}</td>
+                      <td>
+                        {new Date(permission.startDate).toLocaleDateString("es-ES")}- 
+                        {new Date(permission.endDate).toLocaleDateString("es-ES")}
+                      </td>
+                      
                       <td>{permission.fullName}</td>
                       <td>{permission.institutionalEmail}</td>
                       <td>
@@ -275,9 +286,10 @@ function Dashboard() {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Fecha</th>
+                  <th>Fecha Permiso</th>
                   <th>Nombre</th>
                   <th>Estado</th>
+                  <th>Semestre</th>
                   <th>Razón</th>
                 </tr>
               </thead>
@@ -285,10 +297,14 @@ function Dashboard() {
                 {responses.map((response, index) => (
                   <tr key={response._id}>
                     <td>{index + 1}</td>
-                    <td>{new Date(response.timestamp).toLocaleString()}</td>
+                    <td>
+                        {new Date(response.startDate).toLocaleDateString("es-ES")}- 
+                        {new Date(response.endDate).toLocaleDateString("es-ES")}
+                      </td>
                     <td>{response.fullName}</td>
                     <td>{response.status}</td>
-                    <td>{response.reason}</td>
+                    <td>{response.semester}</td>
+                    <td>{response.reason}</td>  
                   </tr>
                 ))}
               </tbody>
@@ -369,7 +385,7 @@ function Dashboard() {
 
       {/* Modal de detalles */}
       {showDetailsModal && selectedPermission && (
-        <div className={`modal show d-block`} tabIndex="-1">
+        <div className="modal show d-block" tabIndex="-1">
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
@@ -377,26 +393,30 @@ function Dashboard() {
                 <button type="button" className="btn-close" onClick={closeDetailsModal}></button>
               </div>
               <div className="modal-body">
-                <div className="row">
-                  <div className="col-md-6 text-center">
-                    <h6>Imagen:</h6>
-                    <img
-                      src={selectedPermission.evidenceImage}
-                      alt="Evidencia"
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-                  <div className="col-md-6">
-                    <h6>PDF:</h6>
-                    <iframe
-                      src={selectedPermission.pdfFile}
-                      title="PDF Viewer"
-                      width="100%"
-                      height="400px"
-                      style={{ border: 'none' }}
-                    ></iframe>
-                  </div>
-                </div>
+                <p><strong>Explicación Breve:</strong> {selectedPermission.briefExplanation}</p>
+                <button
+                  className={`btn ${selectedPermission.expirationStatus === 'En tiempo' ? 'btn-success' : 'btn-warning'}`}
+                >
+                  {selectedPermission.expirationStatus}
+                </button>
+                <h6 className="mt-3">Evidencia:</h6>
+                {selectedPermission.evidence && isPdf(selectedPermission.evidence) ? (
+                  <iframe
+                    src={selectedPermission.evidence}
+                    title="PDF Viewer"
+                    width="100%"
+                    height="400px"
+                    style={{ border: 'none' }}
+                  ></iframe>
+                ) : isImage(selectedPermission.evidence) ? (
+                  <img
+                    src={selectedPermission.evidence}
+                    alt="Evidencia"
+                    style={{ width: '100%' }}
+                  />
+                ) : (
+                  <p>No hay evidencia disponible.</p>
+                )}
               </div>
             </div>
           </div>

@@ -68,7 +68,7 @@ function HomePage() {
       >
         <div className="container ">
           <div className="text-center mt-4 ">
-            <p className="mb-0">Desarollado por © 2025 RaptorBotDev. All rights reserved.</p>
+            <p className="mb-0">Desarollado por © 2025 Juan Sebastian Carrera Bolaños. All rights reserved.</p>
           </div>
         </div>
       </footer>
