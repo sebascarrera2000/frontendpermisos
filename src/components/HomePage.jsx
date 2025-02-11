@@ -1,20 +1,34 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function HomePage() {
-  const navigate = useNavigate(); // Hook para manejar la navegación
+  const navigate = useNavigate();
 
-  const handleNavigate = () => {
-    navigate('/formulario'); // Cambia la ruta a "/formulario"
-  };
+  // Health Check cada 20 minutos
+  useEffect(() => {
+    const healthCheck = async () => {
+      try {
+        await axios.get('https://sispermisosfacil.onrender.com/health'); // Reemplaza con tu endpoint de health check
+        console.log('Health check exitoso.');
+      } catch (error) {
+        console.error('Error en el health check:', error);
+      }
+    };
 
-  const handleNavigateNorm = () => {
-    navigate('/normativa'); // Cambia la ruta a "/formulario"
-  };
+    // Ejecutar el health check cada 20 minutos (1200000 ms)
+    const interval = setInterval(healthCheck, 1200000);
 
-  const handleNavigateSoporte = () => {
-    navigate('/soporte'); // Cambia la ruta a "/formulario"
-  };
+    // Hacer el primer health check al cargar la página
+    healthCheck();
+
+    // Limpiar el intervalo cuando se desmonta el componente
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleNavigate = () => navigate('/formulario');
+  const handleNavigateNorm = () => navigate('/normativa');
+  const handleNavigateSoporte = () => navigate('/soporte');
 
   return (
     <div
@@ -45,36 +59,23 @@ function HomePage() {
             🙌 <strong>¡Simplificamos tu vida académica!</strong>
           </p>
 
-          <button
-            onClick={handleNavigate} // Llama a la función de navegación al hacer clic
-            className="btn btn-primary btn-lg mt-4"
-            style={{ backgroundColor: '#4a90e2', border: 'none' }}
-          >
+          <button onClick={handleNavigate} className="btn btn-primary btn-lg mt-4" style={{ backgroundColor: '#4a90e2', border: 'none' }}>
             Solicita tu permiso 📥
           </button>
           <br />
-          <button
-            onClick={handleNavigateNorm} // Llama a la función de navegación al hacer clic
-            className="btn btn-primary btn-lg mt-4"
-            style={{ backgroundColor: '#4a90e2', border: 'none' }}
-          >
-            Normativa🧾
+          <button onClick={handleNavigateNorm} className="btn btn-primary btn-lg mt-4" style={{ backgroundColor: '#4a90e2', border: 'none' }}>
+            Normativa 🧾
           </button>
           <br />
-        
-          <button
-            onClick={handleNavigateSoporte} // Llama a la función de navegación al hacer clic
-            className="btn btn-primary btn-lg mt-4"
-            style={{ backgroundColor: '#4a90e2', border: 'none' }}
-          >
-            Soporte 🧑‍💻 
+          <button onClick={handleNavigateSoporte} className="btn btn-primary btn-lg mt-4" style={{ backgroundColor: '#4a90e2', border: 'none' }}>
+            Soporte 🧑‍💻
           </button>
         </div>
 
         {/* Imagen (Columna Derecha) */}
         <div className="mt-4 mt-md-0">
           <img
-            src="https://r2.fivemanage.com/kzc7UxO7zNX25M8FPK9d1/images/image-removebg-preview(1).png" // Sustituye por la URL de tu imagen
+            src="https://r2.fivemanage.com/kzc7UxO7zNX25M8FPK9d1/images/image-removebg-preview(1).png"
             alt="Man with Laptop"
             className="img-fluid"
             style={{ maxWidth: '400px', borderRadius: '10px' }}
@@ -91,9 +92,9 @@ function HomePage() {
           color: 'white',
         }}
       >
-        <div className="container ">
-          <div className="text-center mt-4 ">
-            <p className="mb-0">Desarollado por © 2025 Juan Sebastian Carrera Bolaños. All rights reserved.</p>
+        <div className="container">
+          <div className="text-center mt-4">
+            <p className="mb-0">Desarrollado por © 2025 Juan Sebastian Carrera Bolaños. All rights reserved.</p>
           </div>
         </div>
       </footer>

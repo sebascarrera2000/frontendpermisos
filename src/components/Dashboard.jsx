@@ -287,6 +287,7 @@ function Dashboard() {
                 <tr>
                   <th>#</th>
                   <th>Fecha Permiso</th>
+                  <th>Cedula</th>
                   <th>Nombre</th>
                   <th>Estado</th>
                   <th>Semestre</th>
@@ -301,6 +302,7 @@ function Dashboard() {
                         {new Date(response.startDate).toLocaleDateString("es-ES")}- 
                         {new Date(response.endDate).toLocaleDateString("es-ES")}
                       </td>
+                    <td>{response.studentId}</td>
                     <td>{response.fullName}</td>
                     <td>{response.status}</td>
                     <td>{response.semester}</td>
