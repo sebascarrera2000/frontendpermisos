@@ -1,29 +1,18 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import checkHealthStatus from './checkHealthStatus'; // Importa la función
 
 function HomePage() {
   const navigate = useNavigate();
 
-  // Health Check cada 20 minutos
-  useEffect(() => {
-    const healthCheck = async () => {
-      try {
-        await axios.get('https://sispermisosfacil.onrender.com/health'); // Reemplaza con tu endpoint de health check
-        console.log('Health check exitoso.');
-      } catch (error) {
-        console.error('Error en el health check:', error);
-      }
-    };
+   useEffect(() => {
+    checkHealthStatus(); // Llama a la función cuando se monta el componente
 
-    // Ejecutar el health check cada 20 minutos (1200000 ms)
-    const interval = setInterval(healthCheck, 1200000);
+    // Health check cada 20 minutos
+    const interval = setInterval(checkHealthStatus, 1200000);
 
-    // Hacer el primer health check al cargar la página
-    healthCheck();
-
-    // Limpiar el intervalo cuando se desmonta el componente
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // Limpiar el intervalo al desmontar el componente
   }, []);
 
   const handleNavigate = () => navigate('/formulario');
