@@ -6,6 +6,8 @@ import FormularioPermisos from './components/FormularioPermisos';
 import Login from './components/login';
 import Dashboard from './components/Dashboard'; // Si ya tienes el Dashboard
 import StudentManagement from './components/StudentManagement';
+import Normativa from './components/Normativa';
+import Soporte from './components/Soporte';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/formulario" element={<FormularioPermisos />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/normativa" element={<Normativa />} />
+        <Route path="/soporte" element={<Soporte />} />
         <Route path="/dashboard" element={<Dashboard />} /> {/* Página protegida */}
         <Route path="/student-management" element={<StudentManagement />} />
 

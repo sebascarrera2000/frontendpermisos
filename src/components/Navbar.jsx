@@ -36,7 +36,17 @@ function Navbar() {
             </li>
             <li className="nav-item">
               <Link className="nav-link text-white" to="/formulario">
-                Formulario
+                Permisos
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link text-white" to="/normativa">
+                Normativa
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link text-white" to="/soporte">
+                Soporte
               </Link>
             </li>
             {isLoggedIn && (

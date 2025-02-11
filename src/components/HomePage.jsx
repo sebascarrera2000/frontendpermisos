@@ -8,6 +8,14 @@ function HomePage() {
     navigate('/formulario'); // Cambia la ruta a "/formulario"
   };
 
+  const handleNavigateNorm = () => {
+    navigate('/normativa'); // Cambia la ruta a "/formulario"
+  };
+
+  const handleNavigateSoporte = () => {
+    navigate('/soporte'); // Cambia la ruta a "/formulario"
+  };
+
   return (
     <div
       className="home-page"
@@ -42,7 +50,24 @@ function HomePage() {
             className="btn btn-primary btn-lg mt-4"
             style={{ backgroundColor: '#4a90e2', border: 'none' }}
           >
-            Solicita tu permiso 
+            Solicita tu permiso 📥
+          </button>
+          <br />
+          <button
+            onClick={handleNavigateNorm} // Llama a la función de navegación al hacer clic
+            className="btn btn-primary btn-lg mt-4"
+            style={{ backgroundColor: '#4a90e2', border: 'none' }}
+          >
+            Normativa🧾
+          </button>
+          <br />
+        
+          <button
+            onClick={handleNavigateSoporte} // Llama a la función de navegación al hacer clic
+            className="btn btn-primary btn-lg mt-4"
+            style={{ backgroundColor: '#4a90e2', border: 'none' }}
+          >
+            Soporte 🧑‍💻 
           </button>
         </div>
 
