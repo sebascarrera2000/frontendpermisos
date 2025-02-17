@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
+import emailjs from 'emailjs-com';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -23,26 +24,35 @@ function FormularioPermisos() {
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
 
-  const studentImageURL = "https://cdn-icons-png.flaticon.com/512/1154/1154448.png"; // Imagen de estudiante
+  const studentImageURL = "./persona.webp"; // Imagen de estudiante
 
   // Buscar estudiante por cédula
   const handleSearchStudent = async () => {
+    if (!formData.studentId.trim()) {
+      toast.error('❌ Debes ingresar un número de cédula.');
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await axios.get(`https://sispermisosfacil.onrender.com/students/cedula/${formData.studentId}`);
-      const { name, email, semester } = response.data;
+      const { name,last_name, email, semester } = response.data;
       setFormData({
         ...formData,
-        fullName: `${name}`,
+        fullName: `${name} ${last_name}`,
         institutionalEmail: email,
         semester
       });
       setStudentFound(true);
-      toast.success('✅ Estudiante encontrado. Revisa la información.');
+      toast.success(' 🚀 Estudiante encontrado. Revisa la información. ');
     } catch (error) {
       setStudentFound(false);
-      toast.error('❌ Estudiante no encontrado. Si el error persiste, contacta soporte.');
+      toast.error('⚠️ Estudiante no encontrado. Si el error persiste, contacta soporte 🔧 .');
+    } finally {
+      setLoading(false);
     }
   };
+
 
   // Manejar cambios en los campos del formulario
   const handleChange = (e) => {
@@ -57,7 +67,7 @@ function FormularioPermisos() {
 
     const allowedFormats = ['image/png', 'image/jpeg', 'image/webp', 'application/pdf'];
     if (!allowedFormats.includes(file.type)) {
-      toast.error('❌ Formato no permitido. Solo se aceptan PNG, JPG, WEBP y PDF.');
+      toast.error(' 📋 Formato no permitido. Solo se aceptan PNG, JPG, WEBP y PDF.');
       return;
     }
 
@@ -77,7 +87,7 @@ function FormularioPermisos() {
       setFormData({ ...formData, evidence: url });
       toast.success('📁 Archivo subido correctamente.');
     } catch (error) {
-      toast.error('❌ Error al subir el archivo.');
+      toast.error('📝 Error al subir el archivo.');
     } finally {
       setUploading(false);
     }
@@ -103,20 +113,46 @@ function FormularioPermisos() {
     return response.data.url;
   };
 
+  const sendConfirmationEmail = () => {
+    const emailParams = {
+      to_name: formData.fullName,
+      to_email: formData.institutionalEmail,
+      start_date: formData.startDate.toLocaleDateString(),
+      end_date: formData.endDate.toLocaleDateString(),
+      reason: formData.briefExplanation,
+      status: "En revisión",
+      status_color: "#ffc107",
+      evidence_url: formData.evidence
+    };
+  
+    emailjs.send('service_o7sv4cy', 'template_lyrmh9d', emailParams, 'JofbPOd0j3-L7EVS6')
+      .then(() => {
+        toast.success('📧 Te debio llegar un correo , verifica los datos.');
+      })
+      .catch(() => {
+        toast.error('❌ Error al enviar el correo de confirmación.');
+      });
+  };
+  
+
   // Enviar formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!formData.startDate || !formData.endDate || formData.endDate < formData.startDate) {
+      toast.error('❌ Selecciona fechas válidas.');
+      return;
+    }
+    if (!formData.briefExplanation.trim() || !formData.evidence) {
+      toast.error('❌ Debes completar todos los campos y adjuntar evidencia.');
+      return;
+    }
     setLoading(true);
-    const submitData = {
-      ...formData,
-      fullName: `${formData.fullName}`
-    };
-
-    console.log("Datos enviados:", submitData)
     try {
 
-      await axios.post('https://sispermisosfacil.onrender.com/requests', submitData);
+      await axios.post('https://sispermisosfacil.onrender.com/requests', formData);
       toast.success('✅ Formulario enviado exitosamente.');
+      sendConfirmationEmail();
       setFormData({
         studentId: '',
         fullName: '',
@@ -146,7 +182,7 @@ function FormularioPermisos() {
           <div className="card shadow-lg p-3 mb-4" style={{ borderRadius: '10px' }}>
             <div className="row align-items-center">
               <div className="col-md-8">
-                <label className="form-label fw-bold">🔍 Número de Cédula</label>
+              <label className="form-label fw-bold">🔍 Número de Cédula</label>
                 <input
                   type="text"
                   className="form-control"
@@ -154,12 +190,11 @@ function FormularioPermisos() {
                   value={formData.studentId}
                   onChange={handleChange}
                   placeholder="Ingrese el número de cédula"
-                  required
                 />
               </div>
               <div className="col-md-4 d-flex align-items-end">
-                <button type="button" className="btn btn-primary w-100" onClick={handleSearchStudent}>
-                🔍 Buscar
+                <button className={`btn ${loading ? 'btn-secondary' : 'btn-primary'} w-100`} onClick={handleSearchStudent} disabled={loading}>
+                  {loading ? '⏳ Buscando...' : '🔍 Buscar'}
                 </button>
               </div>
             </div>

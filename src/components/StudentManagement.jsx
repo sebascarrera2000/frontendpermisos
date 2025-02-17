@@ -85,7 +85,8 @@ function StudentManagement() {
     e.preventDefault();
     try {
         const studentData = {
-            name: `${newStudent.name} ${newStudent.last_name}`, // Unimos nombre y apellido
+            name: newStudent.name, 
+            last_name : newStudent.last_name,
             email: newStudent.email,
             semester: newStudent.semester,
             studentId: newStudent.studentId,
@@ -106,11 +107,14 @@ function StudentManagement() {
     e.preventDefault();
     try {
         const studentData = {
-            name: `${newStudent.name} ${newStudent.last_name}`, // Unimos nombre y apellido
+            name: newStudent.name,
+            last_name : newStudent.last_name, // Unimos nombre y apellido
             email: newStudent.email,
             semester: newStudent.semester,
             studentId: newStudent.studentId,
           };
+
+          console.log("Datos enviados para editar el estudiante:", studentData);
       await axios.put(`https://sispermisosfacil.onrender.com/students/${editingStudent._id}`, studentData, {
         headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
       });
