@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import emailjs from 'emailjs-com';
@@ -6,7 +6,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'animate.css';
+import Holidays from 'date-holidays';
 
+// Componente para el formulario de permisos
 function FormularioPermisos() {
   const [formData, setFormData] = useState({
     studentId: '',
@@ -25,6 +27,38 @@ function FormularioPermisos() {
   const [preview, setPreview] = useState(null);
 
   const studentImageURL = "./persona.webp"; // Imagen de estudiante
+
+
+  const obtenerDiasHabilesValidos = () => {
+  const diasValidos = [];
+  const hoy = new Date();
+  let contador = 0;
+  let fecha = new Date(hoy);
+  const hd = new Holidays('CO');  // 'CO' para Colombia
+  const festivosColombia = hd.getHolidays(new Date().getFullYear())
+    .map(f => new Date(f.date));
+  // Revisamos hacia atrás
+  while (contador < 3) {
+    fecha.setDate(fecha.getDate() - 1);
+    if (fecha.getDay() !== 0 && fecha.getDay() !== 6 && !festivosColombia.some(f => f.toDateString() === fecha.toDateString())) {
+      diasValidos.push(new Date(fecha));
+      contador++;
+    }
+  }
+
+  // También se permiten fechas posteriores a hoy (sin límite superior)
+  for (let i = 0; i < 60; i++) {  // 2 meses hacia adelante
+    const future = new Date(hoy);
+    future.setDate(hoy.getDate() + i);
+    if (future.getDay() !== 0 && future.getDay() !== 6 && !festivosColombia.some(f => f.toDateString() === future.toDateString())) {
+      diasValidos.push(new Date(future));
+    }
+  }
+
+  return diasValidos;
+};
+
+const diasValidos = obtenerDiasHabilesValidos();
 
   // Buscar estudiante por cédula
   const handleSearchStudent = async () => {
@@ -46,7 +80,7 @@ function FormularioPermisos() {
       setStudentFound(true);
       toast.success(' 🚀 Estudiante encontrado. Revisa la información. ');
     } catch (error) {
-      setStudentFound(false);
+      console.error('Error al buscar estudiante:', error);      setStudentFound(false);
       toast.error('⚠️ Estudiante no encontrado. Si el error persiste, contacta soporte 🔧 .');
     } finally {
       setLoading(false);
@@ -87,6 +121,7 @@ function FormularioPermisos() {
       setFormData({ ...formData, evidence: url });
       toast.success('📁 Archivo subido correctamente.');
     } catch (error) {
+      console.error('Error al subir el archivo:', error);
       toast.error('📝 Error al subir el archivo.');
     } finally {
       setUploading(false);
@@ -231,14 +266,21 @@ function FormularioPermisos() {
                 <div className="row">
                   <div className="col-md-6">
                     <label className="form-label">📅 Inicio : </label>
-                    <DatePicker
+                   <DatePicker
                       selected={formData.startDate}
-                      onChange={(date) => setFormData({ ...formData, startDate: date })}
+                      onChange={(date) => {
+                        setFormData({ ...formData, startDate: date });
+                        if (formData.endDate && date && formData.endDate < date) {
+                          setFormData(prev => ({ ...prev, endDate: null }));
+                        }
+                      }}
+                      includeDates={diasValidos}
                       className="form-control"
                       dateFormat="dd/MM/yyyy"
                       placeholderText="Seleccione la fecha"
                       required
                     />
+
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">📅 Final : </label>

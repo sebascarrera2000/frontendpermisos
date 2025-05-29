@@ -18,6 +18,8 @@
     "axios": "^1.7.9",
     "b2-sdk": "^1.7.0",
     "bootstrap": "^5.3.3",
+    "colombian-holidays": "^5.0.3",
+    "date-holidays": "^3.24.3",
     "emailjs-com": "^3.2.0",
     "permisosfront": "file:",
     "react": "^18.3.1",

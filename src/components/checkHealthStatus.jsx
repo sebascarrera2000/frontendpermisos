@@ -4,10 +4,10 @@ async function checkHealthStatus() {
   const healthCheck = async (retry = false) => {
     try {
       const response = await axios.get('https://sispermisosfacil.onrender.com/students/health');
-      console.log('✅ Servidor disponible');
+      console.log('✅ Servidor disponible',response.data.status);
     } catch (error) {
       if (retry) {
-        console.error('❌ Error después de reintento: El servidor no está disponible.');
+        console.error('❌ Error después de reintento: El servidor no está disponible.', error);
       } else {
         console.warn('⚠️ Primer intento fallido. Reintentando en 50 segundos...');
         setTimeout(() => healthCheck(true), 50000); // Reintentar después de 50 segundos

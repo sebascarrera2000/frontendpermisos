@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 function Normativa() {
   const pdfURL = "Lineamiento para Permisos Académicos.pdf"; // Reemplázalo por tu URL de PDF

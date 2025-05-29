@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import emailjs from 'emailjs-com';
@@ -17,7 +17,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [loadingAdmins, setLoadingAdmins] = useState(false);
 
-  // Verificar autenticación
+  
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (!token) {
@@ -25,7 +25,6 @@ function Dashboard() {
     }
   }, [navigate]);
 
-  // Cargar permisos y clasificarlos
   const fetchPermissions = async () => {
     setLoading(true);
     try {
@@ -357,21 +356,35 @@ function Dashboard() {
       </div>
 
       {/* Modal de acción */}
-      <div className="modal fade" id="actionModal" tabIndex="-1" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">{modalAction} Permiso</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div className="modal-body">
-              <textarea
-                className="form-control"
-                rows="3"
+   <div className="modal fade" id="actionModal" tabIndex="-1" aria-hidden="true">
+  <div className="modal-dialog">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h5 className="modal-title">{modalAction} Permiso</h5>
+        <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div className="modal-body">
+              <label className="form-label">Selecciona una razón:</label>
+              <select
+                className="form-select mb-3"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="Escribe una razón"
-              ></textarea>
+              >
+                <option value="">-- Selecciona una opción --</option>
+                {(modalAction === 'Aceptado'
+                  ? [
+                      'Calamidad domestica',
+                      'Caso fortuito',
+                      'Situaciones Medicas',
+                    ]
+                  : ['Evidencia no valida', 'Extemporaneo']
+                ).map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
@@ -384,7 +397,6 @@ function Dashboard() {
           </div>
         </div>
       </div>
-
       {/* Modal de detalles */}
       {showDetailsModal && selectedPermission && (
         <div className="modal show d-block" tabIndex="-1">
