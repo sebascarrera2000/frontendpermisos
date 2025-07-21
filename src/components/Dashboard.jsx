@@ -164,7 +164,7 @@ function Dashboard() {
   };
 
 
-  const isPdf = (url) => url.includes('cdn.filestackcontent.com');
+  const isPdf = (url) => url.includes('https://symfnsjxeftnbymoucvv.supabase.co/storage/v1/object/public/evidencias-sispermisos');
   const isImage = (url) => url.includes('r2.fivemanage.com');
 
 

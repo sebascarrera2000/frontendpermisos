@@ -6,6 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'animate.css';
+import { createClient } from '@supabase/supabase-js'
 import Holidays from 'date-holidays';
 
 // Componente para el formulario de permisos
@@ -105,13 +106,18 @@ const diasValidos = obtenerDiasHabilesValidos();
       return;
     }
 
+    if (file.type === 'application/pdf' && file.size > 50 * 1024 * 1024) {
+      toast.error('❌ El archivo PDF supera los 50 MB. Utiliza el comprimir pdf.');
+      return;
+    }
+
     setUploading(true);
     setPreview(null);
 
     try {
       let url = '';
       if (file.type === 'application/pdf') {
-        url = await uploadPDFToFilestack(file);
+        url = await uploadPDFToSupabase(file);
         setPreview('https://cdn-icons-png.flaticon.com/512/337/337946.png'); // Icono para PDF
       } else {
         url = await uploadImageToFivemanage(file);
@@ -128,12 +134,29 @@ const diasValidos = obtenerDiasHabilesValidos();
     }
   };
 
-  const uploadPDFToFilestack = async (file) => {
-    const API_KEY = 'AH590BxOTwqUPFM7simowz';
-    const response = await axios.post(`https://www.filestackapi.com/api/store/S3?key=${API_KEY}`, file, {
-      headers: { 'Content-Type': file.type }
-    });
-    return response.data.url;
+  const uploadPDFToSupabase = async (file) => {
+    const supabaseUrl = 'https://symfnsjxeftnbymoucvv.supabase.co';
+    const supabaseKey = 'sb_secret_9N1DuGHUVPu4OWJULtWuPQ_YuVHdJkC';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const filePath = `evidencias/${Date.now()}_${file.name}`;
+    const { error } = await supabase.storage
+      .from('evidencias-sispermisos')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+        contentType: file.type,
+      });
+
+    if (error) throw error;
+
+    // Obtener URL pública
+    const { data: publicUrlData } = supabase
+      .storage
+      .from('evidencias-sispermisos')
+      .getPublicUrl(filePath);
+
+    return publicUrlData.publicUrl;
   };
 
   const uploadImageToFivemanage = async (file) => {
@@ -309,18 +332,38 @@ const diasValidos = obtenerDiasHabilesValidos();
                   placeholder="Describe brevemente tu solicitud"
                 />
               </div>
-
               {/* VISTA PREVIA DE LA EVIDENCIA */}
               <div className="p-3 mt-3" style={{ backgroundColor: '#f9f9f9', borderRadius: '10px' }}>
-                <h5 className="text-primary">📎 Evidencia Adjunta</h5>
-                <input type="file" className="form-control" accept=".pdf,image/*" onChange={handleFileUpload} required />
+                <h5 className="text-primary">📎 Evidencia Adjunta: Escoge una evidencia</h5>
+                <div className="input-group">
+                  <input
+                    type="file"
+                    className="form-control"
+                    accept=".pdf,image/*"
+                    onChange={handleFileUpload}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => window.open('https://www.ilovepdf.com/compress_pdf', '_blank')}
+                  >
+                    🗜 Comprimir PDF
+                  </button>
+                </div>
                 {preview && (
                   <div className="text-center mt-3">
                     <h5 className="text-primary animate__animated animate__flash">📌 Vista Previa</h5>
-                    <img src={preview} alt="Vista previa" className="img-fluid rounded shadow-sm" style={{ maxWidth: '100px' }} />
+                    <img
+                      src={preview}
+                      alt="Vista previa"
+                      className="img-fluid rounded shadow-sm"
+                      style={{ maxWidth: '100px' }}
+                    />
                   </div>
                 )}
               </div>
+
 
               {/* BOTÓN DE ENVÍO */}
               <div className="mt-4 text-center">
